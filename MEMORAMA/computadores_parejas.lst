@@ -1,0 +1,172 @@
+ASxxxx Assembler V05.00  (Motorola 6809), page 1.
+Hexidecimal [16-Bits]
+
+
+
+                              1 .module		main
+                              2 
+                     FF01     3 fin		.equ	0xFF01
+                     FF02     4 teclado		.equ	0xFF02
+                     FF00     5 pantalla	.equ	0xFF00
+                     F000     6 pilaU		.equ	0xF000
+                     FF00     7 pilaS		.equ	0xFF00
+                              8 
+                              9 	.globl 	programa
+                             10 	.globl 	nfila
+                             11 	.globl	ncol
+                             12 	.globl	contador_char
+                             13 	.globl	contador_tblro
+                             14 	.globl	show_intentos
+                             15 	.globl	show_tablero
+                             16 	.globl	pantalla_menu
+                             17 	.globl	contador_par
+                             18 	.globl	salto_de_carro
+                             19 	.globl	limpia_pantalla
+                             20 	.globl	imprime_tablero
+                             21 	.globl	pedir_coordenadas
+                             22 	.globl	show_marcador
+                             23 	.globl	imprime_cadena
+                             24 	.globl	pantalla_juego
+                             25 	.globl	tablero1
+                             26 	.globl	solucion1
+                             27 	
+                             28 
+                             29 ; DECLARACIONES DE TEXTO
+                             30 
+                             31 
+   0000 0A 48 61 73 20 73    32 show_jug:	.asciz	"\nHas seleccionado juego \n"
+        65 6C 65 63 63 69
+        6F 6E 61 64 6F 20
+        6A 75 65 67 6F 20
+        0A 00
+                             33 
+   001A 49 6E 74 65 6E 74    34 show_intentos:	.asciz	"Intentos: "
+        6F 73 3A 20 00
+   0025 54 61 62 6C 65 72    35 show_tablero:	.asciz	"Tablero n: "
+        6F 20 6E 3A 20 00
+                             36 
+                             37 ; DECLARACIONES NUMERICAS (VALORES)
+                             38 
+   0031 00                   39 nfila:		.byte	0
+   0032 00                   40 ncol:		.byte	0
+   0033 00                   41 nintentos:	.byte	0
+   0034 00                   42 ntablero:	.byte	0
+   0035 00                   43 contador_char:	.byte	0
+   0036 00                   44 contador_tblro:	.byte	0
+                             45 
+                             46 ; DECLARACIONES TABLEROS.
+                             47 
+   0037 58 58 58 58 58 58    48 tablero1:	.asciz	"XXXXXXXXXXXXXXXX"
+        58 58 58 58 58 58
+ASxxxx Assembler V05.00  (Motorola 6809), page 2.
+Hexidecimal [16-Bits]
+
+
+
+        58 58 58 58 00
+   0048 41 42 43 44 45 46    49 solucion1:	.asciz	"ABCDEFGHIJKLMNOP"
+        47 48 49 4A 4B 4C
+        4D 4E 4F 50 00
+                             50 	
+                             51 
+                             52 ; INICIO PROGRAMA
+                             53 
+   0059                      54 programa:
+   0059 CE F0 00      [ 3]   55 	ldu	#pilaU
+   005C 10 CE FF 00   [ 4]   56 	lds	#pilaS
+   0060 BD 00 00      [ 8]   57 	jsr	pantalla_menu
+                             58 
+   0063                      59 pantalla_juego:
+   0063 86 30         [ 2]   60 	lda	#'0
+   0065 B7 00 33      [ 5]   61 	sta	nintentos
+                             62 	
+   0068 C6 31         [ 2]   63 	ldb	#'1
+   006A F7 00 34      [ 5]   64 	stb	ntablero
+                             65 
+   006D 8E 00 48      [ 3]   66 	ldx	#solucion1
+   0070 10 8E 00 37   [ 4]   67 	ldy	#tablero1
+                             68 	
+   0074                      69 nivel:	
+   0074 C6 30         [ 2]   70 	ldb	#'0
+   0076 F7 00 00      [ 5]   71 	stb	contador_par
+   0079 BD 00 00      [ 8]   72 	jsr	limpia_pantalla
+                             73 	
+   007C BD 00 87      [ 8]   74 	jsr	show_marcador
+                             75 	
+   007F BD 00 00      [ 8]   76 	jsr	imprime_tablero
+                             77 
+   0082 BD 00 00      [ 8]   78 	jsr 	pedir_coordenadas
+   0085 20 ED         [ 3]   79 	bra 	nivel
+                             80 
+                             81 
+   0087                      82 show_marcador:
+                             83 
+   0087 8E 00 1A      [ 3]   84 	ldx	#show_intentos
+   008A BD 00 00      [ 8]   85 	jsr	imprime_cadena
+                             86 
+   008D 8E 00 33      [ 3]   87 	ldx	#nintentos
+   0090 BD 00 00      [ 8]   88 	jsr	imprime_cadena
+                             89 	
+   0093 BD 00 00      [ 8]   90 	jsr	salto_de_carro
+                             91 
+   0096 8E 00 25      [ 3]   92 	ldx	#show_tablero
+   0099 BD 00 00      [ 8]   93 	jsr	imprime_cadena
+                             94 
+   009C 8E 00 34      [ 3]   95 	ldx	#ntablero
+   009F BD 00 00      [ 8]   96 	jsr	imprime_cadena
+                             97 
+   00A2 BD 00 00      [ 8]   98 	jsr 	salto_de_carro
+   00A5 BD 00 00      [ 8]   99 	jsr	salto_de_carro
+                            100 
+ASxxxx Assembler V05.00  (Motorola 6809), page 3.
+Hexidecimal [16-Bits]
+
+
+
+                            101 
+                            102 
+                            103 .area	FIJA (ABS)
+                            104 
+   FFFE                     105 	.org	0xFFFE	;vector de RESET
+   FFFE 00 59               106 	.word	programa
+                            107 
+                            108 
+                            109 
+                            110 
+                            111 
+                            112 
+                            113 
+                            114 	
+ASxxxx Assembler V05.00  (Motorola 6809), page 4.
+Hexidecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.       =   2710 L   |     .__.ABS.       =   0000 G
+    .__.CPU.       =   0000 L   |     .__.H$L.       =   0001 L
+  0 contador_char      0035 GR  |     contador_par       **** GX
+  0 contador_tblro     0036 GR  |     fin            =   FF01 
+    imprime_cadena     **** GX  |     imprime_tabler     **** GX
+    limpia_pantall     **** GX  |   0 ncol               0032 GR
+  0 nfila              0031 GR  |   0 nintentos          0033 R
+  0 nivel              0074 R   |   0 ntablero           0034 R
+    pantalla       =   FF00     |   0 pantalla_juego     0063 GR
+    pantalla_menu      **** GX  |     pedir_coordena     **** GX
+    pilaS          =   FF00     |     pilaU          =   F000 
+  0 programa           0059 GR  |     salto_de_carro     **** GX
+  0 show_intentos      001A GR  |   0 show_jug           0000 R
+  0 show_marcador      0087 GR  |   0 show_tablero       0025 GR
+  0 solucion1          0048 GR  |   0 tablero1           0037 GR
+    teclado        =   FF02 
+
+ASxxxx Assembler V05.00  (Motorola 6809), page 5.
+Hexidecimal [16-Bits]
+
+Area Table
+
+[_CSEG]
+   0 _CODE            size   A8   flags C180
+   2 FIJA             size    0   flags  908
+[_DSEG]
+   1 _DATA            size    0   flags C0C0
+

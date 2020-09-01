@@ -1,0 +1,168 @@
+ASxxxx Assembler V05.00  (Motorola 6809), page 1.
+Hexidecimal [16-Bits]
+
+
+
+                              1 .module	pedir_datos
+                              2 
+                     FF01     3 fin		.equ	0xFF01
+                     FF02     4 teclado		.equ	0xFF02
+                     FF00     5 pantalla	.equ	0xFF00
+                              6 
+                              7 	.globl	pedir_coordenadas
+                              8 	.globl	contador_par
+                              9 	.globl	calcular_desplazamiento
+                             10 	.globl	desplazamiento
+                             11 	.globl	mov1
+                             12 	.globl	solucion1
+                             13 	.globl	carta1
+                             14 	.globl	carta2
+                             15 	.globl	mov2
+                             16 	.globl	tablero1
+                             17 	.globl	imprime_cadena
+                             18 	.globl	salto_de_carro
+                             19 	.globl	nfila
+                             20 	.globl 	ncol
+                             21 
+   0000 53 65 6C 65 63 63    22 show_pide_fila:	.asciz	"Seleccione la fila : "
+        69 6F 6E 65 20 6C
+        61 20 66 69 6C 61
+        20 3A 20 00
+   0016 53 65 6C 65 63 63    23 show_pide_col:	.asciz	"Seleccione la columna : "
+        69 6F 6E 65 20 6C
+        61 20 63 6F 6C 75
+        6D 6E 61 20 3A 20
+        00
+                             24 
+   002F 00                   25 carta1:		.byte	0
+   0030 00                   26 carta2:		.byte	0
+   0031 00                   27 mov1:		.byte	0
+   0032 00                   28 mov2:		.byte	0
+   0033 00                   29 contador_par:	.byte	0
+                             30 
+   0034                      31 pedir_coordenadas:
+   0034 F6 00 33      [ 5]   32 	ldb 	contador_par
+                             33 	
+   0037 BD 00 87      [ 8]   34 	jsr 	pedir_fila
+   003A BD 00 A0      [ 8]   35 	jsr 	pedir_col
+                             36 
+   003D BD 00 00      [ 8]   37 	jsr	calcular_desplazamiento
+                             38 
+   0040 C1 30         [ 2]   39 	cmpb	#'0
+   0042 27 05         [ 3]   40 	beq	carta_a
+                             41 
+   0044 C1 31         [ 2]   42 	cmpb	#'1
+   0046 27 20         [ 3]   43 	beq	carta_b
+                             44 
+   0048 39            [ 5]   45 	rts
+                             46 
+                             47 
+   0049                      48 carta_a:
+ASxxxx Assembler V05.00  (Motorola 6809), page 2.
+Hexidecimal [16-Bits]
+
+
+
+   0049 F6 00 33      [ 5]   49 	ldb	contador_par
+   004C 5C            [ 2]   50 	incb
+   004D F7 00 33      [ 5]   51 	stb	contador_par
+                             52 
+   0050 B6 00 00      [ 5]   53 	lda 	desplazamiento
+   0053 B7 00 31      [ 5]   54 	sta	mov1
+                             55 
+   0056 8E 00 00      [ 3]   56 	ldx	#solucion1
+   0059 A6 86         [ 5]   57 	lda	a, x
+   005B B7 00 2F      [ 5]   58 	sta	carta1
+                             59 
+   005E 8E 00 00      [ 3]   60 	ldx	#tablero1
+   0061 E6 86         [ 5]   61 	ldb	a, x
+   0063 F7 FF 00      [ 5]   62 	stb	pantalla
+   0066 20 CC         [ 3]   63 	bra	pedir_coordenadas
+                             64 
+   0068                      65 carta_b:
+   0068 F6 00 33      [ 5]   66 	ldb	contador_par
+   006B 5C            [ 2]   67 	incb
+   006C F7 00 33      [ 5]   68 	stb	contador_par
+                             69 
+   006F B6 00 00      [ 5]   70 	lda 	desplazamiento
+   0072 B7 00 32      [ 5]   71 	sta	mov2
+                             72 
+   0075 8E 00 00      [ 3]   73 	ldx	#solucion1
+   0078 A6 86         [ 5]   74 	lda	a, x
+   007A B7 00 30      [ 5]   75 	sta	carta2
+                             76 
+   007D 8E 00 00      [ 3]   77 	ldx	#tablero1
+   0080 E6 86         [ 5]   78 	ldb	a, x
+   0082 F7 FF 00      [ 5]   79 	stb	pantalla
+   0085 20 AD         [ 3]   80 	bra	pedir_coordenadas
+                             81 
+                             82 
+   0087                      83 pedir_fila:
+   0087 BD 00 00      [ 8]   84 	jsr	salto_de_carro
+   008A 8E 00 00      [ 3]   85 	ldx	#show_pide_fila
+   008D BD 00 00      [ 8]   86 	jsr	imprime_cadena
+                             87 
+   0090 B6 FF 02      [ 5]   88 	lda	teclado
+                             89 	
+   0093 81 31         [ 2]   90 	cmpa	#'1
+   0095 25 F0         [ 3]   91 	blo	pedir_fila
+                             92 
+   0097 81 34         [ 2]   93 	cmpa	#'4
+   0099 22 EC         [ 3]   94 	bhi	pedir_fila
+                             95 	
+   009B 4A            [ 2]   96 	deca
+   009C B7 00 00      [ 5]   97 	sta	nfila
+   009F 39            [ 5]   98 	rts
+   00A0                      99 pedir_col:
+   00A0 BD 00 00      [ 8]  100 	jsr	salto_de_carro
+                            101 
+   00A3 8E 00 16      [ 3]  102 	ldx	#show_pide_col
+   00A6 BD 00 00      [ 8]  103 	jsr	imprime_cadena
+ASxxxx Assembler V05.00  (Motorola 6809), page 3.
+Hexidecimal [16-Bits]
+
+
+
+                            104 
+   00A9 B6 FF 02      [ 5]  105 	lda	teclado
+                            106 	
+   00AC 81 31         [ 2]  107 	cmpa	#'1
+   00AE 25 F0         [ 3]  108 	blo	pedir_col	
+                            109 	
+   00B0 81 34         [ 2]  110 	cmpa	#'4
+   00B2 22 EC         [ 3]  111 	bhi	pedir_col
+                            112 
+   00B4 4A            [ 2]  113 	deca
+   00B5 B7 00 00      [ 5]  114 	sta	ncol
+                            115 	
+   00B8 39            [ 5]  116 	rts
+ASxxxx Assembler V05.00  (Motorola 6809), page 4.
+Hexidecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.       =   2710 L   |     .__.ABS.       =   0000 G
+    .__.CPU.       =   0000 L   |     .__.H$L.       =   0001 L
+    calcular_despl     **** GX  |   0 carta1             002F GR
+  0 carta2             0030 GR  |   0 carta_a            0049 R
+  0 carta_b            0068 R   |   0 contador_par       0033 GR
+    desplazamiento     **** GX  |     fin            =   FF01 
+    imprime_cadena     **** GX  |   0 mov1               0031 GR
+  0 mov2               0032 GR  |     ncol               **** GX
+    nfila              **** GX  |     pantalla       =   FF00 
+  0 pedir_col          00A0 R   |   0 pedir_coordena     0034 GR
+  0 pedir_fila         0087 R   |     salto_de_carro     **** GX
+  0 show_pide_col      0016 R   |   0 show_pide_fila     0000 R
+    solucion1          **** GX  |     tablero1           **** GX
+    teclado        =   FF02 
+
+ASxxxx Assembler V05.00  (Motorola 6809), page 5.
+Hexidecimal [16-Bits]
+
+Area Table
+
+[_CSEG]
+   0 _CODE            size   B9   flags C180
+[_DSEG]
+   1 _DATA            size    0   flags C0C0
+

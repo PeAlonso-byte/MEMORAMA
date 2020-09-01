@@ -1,0 +1,152 @@
+ASxxxx Assembler V05.00  (Motorola 6809), page 1.
+Hexidecimal [16-Bits]
+
+
+
+                              1 .module		menu
+                     FF01     2 fin		.equ	0xFF01
+                     FF02     3 teclado		.equ	0xFF02
+                     FF00     4 pantalla	.equ	0xFF00
+                              5 
+                              6 	.globl	pantalla_menu
+                              7 	.globl	pantalla_inst
+                              8 	.globl	imprime_cadena
+                              9 	.globl	limpia_pantalla
+                             10 	.globl	pantalla_juego
+                             11 	
+                             12 
+   0000 31 2E 2D 20 4A 75    13 show_menu: 	.ascii "1.- Jugar\n"
+        67 61 72 0A
+   000A 32 2E 2D 20 49 6E    14 	 	.ascii "2.- Instrucciones\n"
+        73 74 72 75 63 63
+        69 6F 6E 65 73 0A
+   001C 33 2E 2D 20 53 61    15  		.asciz "3.- Salir\n"
+        6C 69 72 0A 00
+                             16 
+   0027 0A 49 6E 73 74 72    17 show_inst:	.ascii 	"\nInstrucciones: Las cartas apareceran boca abajo.\n"
+        75 63 63 69 6F 6E
+        65 73 3A 20 4C 61
+        73 20 63 61 72 74
+        61 73 20 61 70 61
+        72 65 63 65 72 61
+        6E 20 62 6F 63 61
+        20 61 62 61 6A 6F
+        2E 0A
+   0059 53 65 20 73 65 6C    18 		.ascii	"Se selecciona una fila y una columna,"
+        65 63 63 69 6F 6E
+        61 20 75 6E 61 20
+        66 69 6C 61 20 79
+        20 75 6E 61 20 63
+        6F 6C 75 6D 6E 61
+        2C
+   007E 6C 61 20 63 61 72    19 		.ascii	"la carta se da la vuelta y se repite la seleccion, "
+        74 61 20 73 65 20
+        64 61 20 6C 61 20
+        76 75 65 6C 74 61
+        20 79 20 73 65 20
+        72 65 70 69 74 65
+        20 6C 61 20 73 65
+        6C 65 63 63 69 6F
+        6E 2C 20
+   00B1 73 69 20 6C 61 73    20 		.ascii	"si las dos son iguales quedan dadas la vuelta.\n"
+        20 64 6F 73 20 73
+        6F 6E 20 69 67 75
+        61 6C 65 73 20 71
+        75 65 64 61 6E 20
+        64 61 64 61 73 20
+        6C 61 20 76 75 65
+        6C 74 61 2E 0A
+   00E0 47 61 6E 61 73 20    21 		.asciz	"Ganas cuando todas las cartas estan dadas la vuelta.\n\n"
+        63 75 61 6E 64 6F
+ASxxxx Assembler V05.00  (Motorola 6809), page 2.
+Hexidecimal [16-Bits]
+
+
+
+        20 74 6F 64 61 73
+        20 6C 61 73 20 63
+        61 72 74 61 73 20
+        65 73 74 61 6E 20
+        64 61 64 61 73 20
+        6C 61 20 76 75 65
+        6C 74 61 2E 0A 0A
+        00
+   0117 0A 48 61 73 20 73    22 show_opc_inc:	.asciz	"\nHas seleccionado una opcion incorrecta (1-3). \n"
+        65 6C 65 63 63 69
+        6F 6E 61 64 6F 20
+        75 6E 61 20 6F 70
+        63 69 6F 6E 20 69
+        6E 63 6F 72 72 65
+        63 74 61 20 28 31
+        2D 33 29 2E 20 0A
+        00
+                             23 
+                             24 
+   0148                      25 pantalla_menu:
+                             26 
+   0148 8E 00 00      [ 3]   27 	ldx	#show_menu
+   014B BD 00 00      [ 8]   28 	jsr	imprime_cadena
+                             29 
+   014E                      30 teclado_opcion:
+                             31 
+   014E F6 FF 02      [ 5]   32 	ldb 	teclado
+   0151 C1 31         [ 2]   33 	cmpb	#'1
+   0153 10 27 00 00   [ 6]   34 	lbeq 	pantalla_juego
+                             35 
+   0157 C1 32         [ 2]   36 	cmpb	#'2
+   0159 10 27 00 12   [ 6]   37 	lbeq	pantalla_inst
+                             38 
+   015D C1 33         [ 2]   39 	cmpb	#'3
+   015F 27 1B         [ 3]   40 	beq	acabar
+                             41 
+   0161 26 00         [ 3]   42 	bne	default
+                             43 
+   0163                      44 default:
+                             45 	
+   0163 BD 00 00      [ 8]   46 	jsr	limpia_pantalla
+   0166 8E 01 17      [ 3]   47 	ldx	#show_opc_inc
+   0169 BD 00 00      [ 8]   48 	jsr	imprime_cadena
+   016C 16 FF D9      [ 5]   49 	lbra	pantalla_menu
+                             50 
+   016F                      51 pantalla_inst:
+   016F BD 00 00      [ 8]   52 	jsr	limpia_pantalla
+                             53 
+   0172 8E 00 27      [ 3]   54 	ldx	#show_inst
+   0175 BD 00 00      [ 8]   55 	jsr	imprime_cadena
+                             56 
+   0178 16 FF CD      [ 5]   57 	lbra	pantalla_menu
+                             58 
+   017B 39            [ 5]   59 	rts
+   017C                      60 acabar:
+ASxxxx Assembler V05.00  (Motorola 6809), page 3.
+Hexidecimal [16-Bits]
+
+
+
+   017C 4F            [ 2]   61 	clra
+   017D B7 FF 01      [ 5]   62 	sta fin
+ASxxxx Assembler V05.00  (Motorola 6809), page 4.
+Hexidecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.       =   2710 L   |     .__.ABS.       =   0000 G
+    .__.CPU.       =   0000 L   |     .__.H$L.       =   0001 L
+  0 acabar             017C R   |   0 default            0163 R
+    fin            =   FF01     |     imprime_cadena     **** GX
+    limpia_pantall     **** GX  |     pantalla       =   FF00 
+  0 pantalla_inst      016F GR  |     pantalla_juego     **** GX
+  0 pantalla_menu      0148 GR  |   0 show_inst          0027 R
+  0 show_menu          0000 R   |   0 show_opc_inc       0117 R
+    teclado        =   FF02     |   0 teclado_opcion     014E R
+
+ASxxxx Assembler V05.00  (Motorola 6809), page 5.
+Hexidecimal [16-Bits]
+
+Area Table
+
+[_CSEG]
+   0 _CODE            size  180   flags C180
+[_DSEG]
+   1 _DATA            size    0   flags C0C0
+

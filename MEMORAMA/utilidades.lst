@@ -1,0 +1,137 @@
+ASxxxx Assembler V05.00  (Motorola 6809), page 1.
+Hexidecimal [16-Bits]
+
+
+
+                              1 .module	utilidades
+                              2 
+                              3 
+                              4 
+                     FF01     5 fin		.equ	0xFF01
+                     FF02     6 teclado		.equ	0xFF02
+                     FF00     7 pantalla	.equ	0xFF00
+                              8 
+                              9 	.globl	imprime_cadena
+                             10 	.globl	limpia_pantalla
+                             11 	.globl	salto_de_carro
+                             12 	.globl	calcular_desplazamiento
+                             13 	.globl	imprime_tablero
+                             14 	.globl	nfila
+                             15 	.globl	ncol
+                             16 	.globl	contador_par
+                             17 	.globl	clear_screen
+                             18 	.globl	retorno_carro
+                             19 	.globl	desplazamiento
+                             20 	.globl	contador_char
+                             21 	.globl	salto_de_carro
+                             22 
+                             23 ; UTILIDADES
+                             24 
+   0000 1B 5B 32 4A 20 1B    25 clear_screen:	.asciz	"\33[2J \33[1;1H"
+        5B 31 3B 31 48 00
+   000C 0A 00                26 retorno_carro:	.asciz	"\n"
+                             27 
+   000E 00                   28 desplazamiento:	.byte	0
+                             29 
+                             30 
+                             31 
+                             32 
+   000F                      33 imprime_cadena:
+                             34 
+   000F 34 02         [ 6]   35         pshs a
+                             36 
+   0011 A6 80         [ 6]   37 sgte:   lda ,x+
+   0013 27 05         [ 3]   38         beq ret_imprime_cadena
+   0015 B7 FF 00      [ 5]   39         sta pantalla
+   0018 20 F7         [ 3]   40         bra sgte
+   001A                      41 ret_imprime_cadena:
+   001A 35 02         [ 6]   42         puls a
+   001C 39            [ 5]   43         rts
+                             44 
+   001D                      45 limpia_pantalla:
+                             46 
+   001D 8E 00 00      [ 3]   47 	ldx	#clear_screen
+   0020 BD 00 0F      [ 8]   48 	jsr	imprime_cadena
+   0023 39            [ 5]   49 	rts
+                             50 
+   0024                      51 salto_de_carro:
+                             52 
+   0024 8E 00 0C      [ 3]   53 	ldx	#retorno_carro
+   0027 BD 00 0F      [ 8]   54 	jsr	imprime_cadena
+ASxxxx Assembler V05.00  (Motorola 6809), page 2.
+Hexidecimal [16-Bits]
+
+
+
+   002A 39            [ 5]   55 	rts
+                             56 
+   002B                      57 calcular_desplazamiento:
+                             58 		
+   002B 86 00         [ 2]   59 	lda #nfila
+   002D C6 04         [ 2]   60 	ldb #4
+                             61 
+   002F 3D            [11]   62 	mul
+                             63 
+   0030 C3 00 00      [ 4]   64 	addd #ncol
+   0033 FD 00 0E      [ 6]   65 	std desplazamiento	
+                             66  	
+   0036 39            [ 5]   67     	rts
+                             68 
+   0037                      69 imprime_tablero: 
+   0037 C6 30         [ 2]   70         ldb 	#'0	
+   0039 F7 00 00      [ 5]   71         stb 	contador_char
+   003C                      72 sgte_c:  
+   003C F6 00 00      [ 5]   73 	ldb 	contador_char
+                             74 	
+   003F C1 34         [ 2]   75 	cmpb 	#'4	
+   0041 27 0D         [ 3]   76 	beq 	sgte_linea
+   0043 5C            [ 2]   77 	incb
+   0044 F7 00 00      [ 5]   78 	stb 	contador_char
+                             79 	
+   0047 A6 A0         [ 6]   80 	lda 	,y+
+   0049 27 12         [ 3]   81         beq 	ret_imprime_tb
+   004B B7 FF 00      [ 5]   82         sta 	pantalla
+   004E 20 EC         [ 3]   83         bra 	sgte_c
+                             84 
+   0050                      85 sgte_linea: 
+   0050 C6 30         [ 2]   86 	ldb 	#'0
+   0052 F7 00 00      [ 5]   87 	stb 	contador_char
+   0055 BD 00 24      [ 8]   88 	jsr	salto_de_carro
+   0058 BD 00 0F      [ 8]   89 	jsr 	imprime_cadena
+   005B 20 DF         [ 3]   90 	bra 	sgte_c
+                             91 
+                             92 ;sgte_tablero:
+                             93 	;ldx	#show_jug
+                             94 	;jsr	imprime_cadena
+                             95 
+                             96 	
+   005D                      97 ret_imprime_tb:
+   005D 39            [ 5]   98  	rts
+ASxxxx Assembler V05.00  (Motorola 6809), page 3.
+Hexidecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.       =   2710 L   |     .__.ABS.       =   0000 G
+    .__.CPU.       =   0000 L   |     .__.H$L.       =   0001 L
+  0 calcular_despl     002B GR  |   0 clear_screen       0000 GR
+    contador_char      **** GX  |     contador_par       **** GX
+  0 desplazamiento     000E GR  |     fin            =   FF01 
+  0 imprime_cadena     000F GR  |   0 imprime_tabler     0037 GR
+  0 limpia_pantall     001D GR  |     ncol               **** GX
+    nfila              **** GX  |     pantalla       =   FF00 
+  0 ret_imprime_ca     001A R   |   0 ret_imprime_tb     005D R
+  0 retorno_carro      000C GR  |   0 salto_de_carro     0024 GR
+  0 sgte               0011 R   |   0 sgte_c             003C R
+  0 sgte_linea         0050 R   |     teclado        =   FF02 
+
+ASxxxx Assembler V05.00  (Motorola 6809), page 4.
+Hexidecimal [16-Bits]
+
+Area Table
+
+[_CSEG]
+   0 _CODE            size   5E   flags C180
+[_DSEG]
+   1 _DATA            size    0   flags C0C0
+
